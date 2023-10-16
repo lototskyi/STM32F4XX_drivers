@@ -3,7 +3,7 @@
  *
  */
 
-
+#include <string.h>
 #include "stm32f407xx.h"
 
 #define LOW        				0
@@ -12,12 +12,15 @@
 
 void delay(void)
 {
-	for(uint32_t i = 0; i < 500000/2; i++);
+	for(uint32_t i = 0; i < 500000/2; i++); //~200ms if 16MHz
 }
 
 int main(void)
 {
 	GPIO_Handle_t GpioLed, GPIOBtn;
+	memset(&GpioLed, 0, sizeof(GpioLed));
+	memset(&GPIOBtn, 0, sizeof(GPIOBtn));
+
 	GpioLed.pGPIOx = GPIOA;
 	GpioLed.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_8;
 	GpioLed.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_OUTPUT;
@@ -30,21 +33,24 @@ int main(void)
 
 	GPIOBtn.pGPIOx = GPIOD;
 	GPIOBtn.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_5;
-	GPIOBtn.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_INPUT;
+	GPIOBtn.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_IT_FT; //interrupt falling edge
 	GPIOBtn.GPIO_PinConfig.GPIO_PinSpeed = GPIO_SPEED_FAST;
 	GPIOBtn.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_PIN_PU;
 
 	GPIO_PeriClockControl(GPIOD, ENABLE);
 	GPIO_Init(&GPIOBtn);
 
-	while(1) {
+	//IRQ configurations
+	GPIO_IRQPriorityConfig(IRQ_NO_EXTI9_5, NVIC_IRQ_PRI15);
+	GPIO_IRQInterruptConfig(IRQ_NO_EXTI9_5, ENABLE);
 
-		if (GPIO_ReadFromInputPin(GPIOD, GPIO_PIN_NO_5) == BTN_PRESSED) {
-			delay();
-			GPIO_ToggleOutputPin(GPIOA, GPIO_PIN_NO_8);
-		}
 
-	}
+	while(1);
+}
 
-	return 0;
+void EXTI9_5_IRQHandler(void)
+{
+    delay(); //200ms . wait till button de-bouncing gets over
+	GPIO_IRQHandling(GPIO_PIN_NO_5); //clear the pending event from exti line
+	GPIO_ToggleOutputPin(GPIOA, GPIO_PIN_NO_8);
 }
