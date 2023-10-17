@@ -82,6 +82,8 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 	//1. configure the mode of GPIO pin
 	uint32_t temp = 0;
 
+	GPIO_PeriClockControl(pGPIOHandle->pGPIOx, ENABLE);
+
 	if (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_ANALOG) {
 		temp = (pGPIOHandle->GPIO_PinConfig.GPIO_PinMode << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber));
 		pGPIOHandle->pGPIOx->MODER &= ~(0x3 << (2 * pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)); //clear bits in the register
