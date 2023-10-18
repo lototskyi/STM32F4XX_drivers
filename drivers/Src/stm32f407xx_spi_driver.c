@@ -120,7 +120,7 @@ void SPI_DeInit(SPI_RegDef_t *pSPIx)
 
 uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagName) {
 
-	if (pSPIx->SR && FlagName) {
+	if (pSPIx->SR & FlagName) {
 		return FLAG_SET;
 	}
 
@@ -234,3 +234,25 @@ void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t EnorDi)
 		}
 }
 
+/*********************************************************************
+ * @fn      		  - SPI_SSOEConfig
+ *
+ * @brief             - configure SSOE bit
+ *
+ * @param[in]         - SPI peripheral register structure
+ * @param[in]         - enable/disable
+ * @param[in]         -
+ *
+ * @return            -  none
+ *
+ * @Note              -  Blocking call
+
+ */
+void SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t EnorDi)
+{
+	if (EnorDi == ENABLE) {
+			pSPIx->CR2 |= (1 << SPI_CR2_SSOE);
+		} else {
+			pSPIx->CR2 &= ~(1 << SPI_CR2_SSOE);
+		}
+}
