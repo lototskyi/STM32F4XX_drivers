@@ -33,7 +33,7 @@ typedef struct {
  */
 #define GPIO_PIN_NO_0 						0
 #define GPIO_PIN_NO_1 						1
-#define GPIO_PIN_NO_2 						3
+#define GPIO_PIN_NO_2 						2
 #define GPIO_PIN_NO_3 						3
 #define GPIO_PIN_NO_4 						4
 #define GPIO_PIN_NO_5 						5
